@@ -53,18 +53,19 @@ public class Sudoku {
 
 		buildModel();
 		model.getSolver().showStatistics();
-		model.getSolver().solve();
 		
-		StringBuilder st = new StringBuilder(String.format("Sudoku -- %s\n", instance, " X ", instance));
-		st.append("\t");
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
-				st.append(rows[i][j]).append("\t\t\t");
+		while (model.getSolver().solve()) {
+			StringBuilder st = new StringBuilder(String.format("Sudoku -- %s\n", instance, " X ", instance));
+			st.append("\t");
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < n; j++) {
+					st.append(rows[i][j]).append("\t\t\t");
+				}
+				st.append("\n\t");
 			}
-			st.append("\n\t");
+	
+			System.out.println(st.toString());
 		}
-
-		System.out.println(st.toString());
 	}
 
 	public void buildModel() {
@@ -73,6 +74,7 @@ public class Sudoku {
 		rows = new IntVar[n][n];
 		cols = new IntVar[n][n];
 		shapes = new IntVar[n][n];
+
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
 				rows[i][j] = model.intVar("c_" + i + "_" + j, 1, n, false);
@@ -90,15 +92,12 @@ public class Sudoku {
 			}
 		}
 
-		for (
-
-				int i = 0; i < n; i++) {
+		for (int i = 0; i < n; i++) {
 			System.out.println(i);
 			model.allDifferent(rows[i], "AC").post();
 			model.allDifferent(cols[i], "AC").post();
 			model.allDifferent(shapes[i], "AC").post();
 		}
-
 	}
 
 	// Check all parameters values
@@ -144,6 +143,5 @@ public class Sudoku {
 		model.getSolver().setSearch(minDomLBSearch(append(rows)));
 
 	}
-	
 
 }

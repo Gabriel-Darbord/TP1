@@ -117,8 +117,6 @@ public class Sudoku {
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
 				int ind = (j + i * s + i / s) % n;
-				System.out.println("i=" + i + " j=" + j + " ind=" + ind);
-				
 				grid[i][j] = nRand.get(ind);
 			}
 		}
@@ -132,14 +130,8 @@ public class Sudoku {
 
 	public void findSolution() {
 		// vérifie que l'état courant est correct
-		boolean hasSolution = solutionChecker();
-
-		if (hasSolution) {
-			hasSolution = findSolutionBT(0, 0);
-		}
-
-		if (!hasSolution) {
-			System.out.println(toString() + "Pas de solution");
+		if (solutionChecker()) {
+			findSolutionBT(0, 0);
 		}
 	}
 
@@ -148,7 +140,7 @@ public class Sudoku {
 		if (i == n) {
 			return true;
 		}
-		
+
 		// prochains indices
 		int nextI, nextJ;
 		if (j == n - 1) {
@@ -170,7 +162,7 @@ public class Sudoku {
 
 			// appel récursif si le numéro est correct
 			if (checkRow(i) && checkColumn(j) && checkSquare(i / s, j / s) && findSolutionBT(nextI, nextJ)) {
-				return true;
+				System.out.println(toString() + '\n');
 			}
 		}
 
@@ -203,14 +195,13 @@ public class Sudoku {
 
 	public static void main(String args[]) {
 		int n = 4;
-		
+
 		Sudoku s = new Sudoku(n);
 		s.generateSolution();
 		System.out.println("Solution générée aléatoirement :\n" + s);
 
-		System.out.println("Première solution trouvée à partir d'une grille vide :");
+		System.out.println("\nEnsemble des solutions :");
 		s = new Sudoku(n);
 		s.findSolution();
-		System.out.println(s);
 	}
 }

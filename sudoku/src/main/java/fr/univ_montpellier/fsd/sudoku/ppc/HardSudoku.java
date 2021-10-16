@@ -37,7 +37,7 @@ public class HardSudoku {
 			formatter.printHelp("sudoku", options, true);
 			System.exit(0);
 		}
-		instance = 4;
+		instance = 9;
 		// Check arguments and options
 		for (Option opt : line.getOptions()) {
 			checkOption(line, opt.getLongOpt());
@@ -46,7 +46,7 @@ public class HardSudoku {
 		n = instance;
 		s = (int) Math.sqrt(n);
 
-		new Sudoku().solve();
+		new HardSudoku().solve();
 	}
 
 	public void solve() {
@@ -73,9 +73,28 @@ public class HardSudoku {
 		rows = new IntVar[n][n];
 		cols = new IntVar[n][n];
 		shapes = new IntVar[n][n];
+		
+		int[][] instance = {
+				{8,0,0, 0,0,0, 0,0,0},
+				{0,0,3, 6,0,0, 0,0,0},
+				{0,7,0, 0,9,0, 2,0,0},
+				
+				{0,5,0, 0,0,7, 0,0,0},
+				{0,0,0, 0,4,5, 7,0,0},
+				{0,0,0, 1,0,0, 0,3,0},
+				
+				{0,0,1, 0,0,0, 0,6,8},
+				{0,0,8, 5,0,0, 0,1,0},
+				{0,9,0, 0,0,0, 4,0,0},
+		};
+
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
-				rows[i][j] = model.intVar("c_" + i + "_" + j, 1, n, false);
+				if (instance[i][j] > 0) {
+					rows[i][j] = model.intVar("c_" + i + "_" + j, instance[i][j]);
+				} else {					
+					rows[i][j] = model.intVar("c_" + i + "_" + j, 1, n, false);
+				}
 				cols[j][i] = rows[i][j];
 			}
 		}
@@ -90,9 +109,7 @@ public class HardSudoku {
 			}
 		}
 
-		for (
-
-				int i = 0; i < n; i++) {
+		for (int i = 0; i < n; i++) {
 			System.out.println(i);
 			model.allDifferent(rows[i], "AC").post();
 			model.allDifferent(cols[i], "AC").post();
@@ -102,8 +119,6 @@ public class HardSudoku {
 		// --------------------------------------
 		// TODO: add constraints here
 
-		
-		
 		// --------------------------------------
 
 	}

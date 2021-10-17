@@ -100,6 +100,80 @@ public class Sudoku {
 		return true;
 	}
 
+	/************************************
+	 * check if the value val is already used in column col
+	 * 
+	 * @param val
+	 * @param col
+	 * @return true/false
+	 *************************************/
+
+	public boolean alreadyInCol(int val, int col) {
+		for (int i = 0; i < n; i++) {
+			if (grid[i][col] == val) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/************************************
+	 * check if the value val is already used in row row
+	 * 
+	 * @param val
+	 * @param row
+	 * @return true/false
+	 *************************************/
+
+	public boolean alreadyInRow(int val, int row) {
+		for (int j = 0; j < n; j++) {
+			if (grid[row][j] == val) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/*************************************
+	 * check if the value val is already used in the square containing the cell
+	 * grid[row][col]
+	 * 
+	 * @param val
+	 * @param row
+	 * @param col
+	 * @return true/false
+	 *************************************/
+
+	public boolean alreadyInSquare(int val, int row, int col) {
+		for (int k = 0; k < s; k++) {
+			for (int l = 0; l < s; l++) {
+				int i = row / s * s + k;
+				int j = col / s * s + l;
+				if (grid[i][j] == val) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/*************************************
+	 * check if the value val is:
+	 * 1- already used in column col
+	 * 2- already used in row row
+	 * 3- already used in the square containing the cell grid[row][col]
+	 * 
+	 * @param val
+	 * @param row
+	 * @param col
+	 * @return true/false
+	 *************************************/
+	public boolean isPossible(int valeur, int row, int col) {
+		return !alreadyInCol(valeur, col)
+				&& !alreadyInRow(valeur, row)
+				&& !alreadyInSquare(valeur, row, col);
+	}
+
 	/*
 	 * =============================================================================
 	 * Generate a random grid solution
@@ -160,15 +234,17 @@ public class Sudoku {
 
 		// test de chaque numéro
 		for (int k = 1; k <= n; k++) {
-			grid[i][j] = k;
-
 			// appel récursif si le numéro est correct
-			if (checkRow(i) && checkColumn(j) && checkSquare(i / s, j / s) && findSolutionBT(nextI, nextJ)) {
-				return true;
+			if (isPossible(k, i, j)) {
+				grid[i][j] = k;
+
+				if (findSolutionBT(nextI, nextJ)) {
+					return true;
+				}
 			}
 		}
 
-		// remise à zéro et backtrack
+		// remise à zéro
 		grid[i][j] = 0;
 
 		return false;

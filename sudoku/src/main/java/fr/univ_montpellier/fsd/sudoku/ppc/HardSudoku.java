@@ -46,25 +46,26 @@ public class HardSudoku {
 		n = instance;
 		s = (int) Math.sqrt(n);
 		
-		new VeryHardSudoku().solve();
+		new HardSudoku().solve();
 	}
 
 	public void solve() {
 
 		buildModel();
 		model.getSolver().showStatistics();
-		model.getSolver().solve();
 
-		StringBuilder st = new StringBuilder(String.format("Sudoku -- %s\n", instance, " X ", instance));
-		st.append("\t");
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
-				st.append(rows[i][j]).append("\t\t\t");
+		while(model.getSolver().solve()) {
+			StringBuilder st = new StringBuilder(String.format("Sudoku -- %s\n", instance, " X ", instance));
+			st.append("\t");
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < n; j++) {
+					st.append(rows[i][j]).append("\t\t\t");
+				}
+				st.append("\n\t");
 			}
-			st.append("\n\t");
+	
+			System.out.println(st.toString());
 		}
-
-		System.out.println(st.toString());
 	}
 	
 	// instance de la question 7
@@ -91,13 +92,13 @@ public class HardSudoku {
 		cols = new IntVar[n][n];
 		shapes = new IntVar[n][n];
 
-		int[][] instance = getInstance();
+		int[][] instance = getInstance(); // null pour grille vide
 
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
-				if (instance[i][j] > 0) {
+				if (instance != null && instance[i][j] > 0) {
 					rows[i][j] = model.intVar("c_" + i + "_" + j, instance[i][j]);
-				} else {					
+				} else {
 					rows[i][j] = model.intVar("c_" + i + "_" + j, 1, n, false);
 				}
 				cols[j][i] = rows[i][j];

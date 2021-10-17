@@ -18,7 +18,7 @@ public class Sudoku {
 
 	static int n;
 	static int s;
-	private static int instance;
+	public static int instance;
 	private static long timeout = 3600000; // one hour
 
 	IntVar[][] rows, cols, shapes;
@@ -43,29 +43,30 @@ public class Sudoku {
 			checkOption(line, opt.getLongOpt());
 		}
 
+		new Sudoku().solve();
+	}
+	
+	public Sudoku() {		
 		n = instance;
 		s = (int) Math.sqrt(n);
-
-		new Sudoku().solve();
 	}
 
 	public void solve() {
 
 		buildModel();
 		model.getSolver().showStatistics();
-		
-		while (model.getSolver().solve()) {
-			StringBuilder st = new StringBuilder(String.format("Sudoku -- %s\n", instance, " X ", instance));
-			st.append("\t");
-			for (int i = 0; i < n; i++) {
-				for (int j = 0; j < n; j++) {
-					st.append(rows[i][j]).append("\t\t\t");
-				}
-				st.append("\n\t");
+		model.getSolver().solve();
+
+		StringBuilder st = new StringBuilder(String.format("Sudoku -- %s\n", instance, " X ", instance));
+		st.append("\t");
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				st.append(rows[i][j]).append("\t\t\t");
 			}
-	
-			System.out.println(st.toString());
+			st.append("\n\t");
 		}
+
+		System.out.println(st.toString());
 	}
 
 	public void buildModel() {
@@ -93,7 +94,6 @@ public class Sudoku {
 		}
 
 		for (int i = 0; i < n; i++) {
-			System.out.println(i);
 			model.allDifferent(rows[i], "AC").post();
 			model.allDifferent(cols[i], "AC").post();
 			model.allDifferent(shapes[i], "AC").post();

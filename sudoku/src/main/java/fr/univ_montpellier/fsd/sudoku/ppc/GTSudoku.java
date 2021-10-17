@@ -18,7 +18,7 @@ public class GTSudoku {
 
 	static int n;
 	static int s;
-	private static int instance;
+	public static int instance;
 	private static long timeout = 3600000; // one hour
 
 	IntVar[][] rows, cols, shapes;
@@ -43,10 +43,12 @@ public class GTSudoku {
 			checkOption(line, opt.getLongOpt());
 		}
 
+		new GTSudoku().solve();
+	}
+
+	public GTSudoku() {		
 		n = instance;
 		s = (int) Math.sqrt(n);
-
-		new GTSudoku().solve();
 	}
 
 	public void solve() {

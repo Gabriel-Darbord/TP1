@@ -130,8 +130,10 @@ public class Sudoku {
 
 	public void findSolution() {
 		// vérifie que l'état courant est correct
-		if (solutionChecker()) {
-			findSolutionBT(0, 0);
+		if (solutionChecker() && findSolutionBT(0, 0)) {
+			System.out.println(toString() + '\n');
+		} else {
+			System.out.println("Pas de solution.");
 		}
 	}
 
@@ -162,7 +164,7 @@ public class Sudoku {
 
 			// appel récursif si le numéro est correct
 			if (checkRow(i) && checkColumn(j) && checkSquare(i / s, j / s) && findSolutionBT(nextI, nextJ)) {
-				System.out.println(toString() + '\n');
+				return true;
 			}
 		}
 

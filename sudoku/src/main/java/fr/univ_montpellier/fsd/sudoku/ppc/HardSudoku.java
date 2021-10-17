@@ -45,8 +45,8 @@ public class HardSudoku {
 
 		n = instance;
 		s = (int) Math.sqrt(n);
-
-		new HardSudoku().solve();
+		
+		new VeryHardSudoku().solve();
 	}
 
 	public void solve() {
@@ -66,15 +66,10 @@ public class HardSudoku {
 
 		System.out.println(st.toString());
 	}
-
-	public void buildModel() {
-		model = new Model();
-
-		rows = new IntVar[n][n];
-		cols = new IntVar[n][n];
-		shapes = new IntVar[n][n];
-		
-		int[][] instance = {
+	
+	// instance de la question 7
+	protected int[][] getInstance() {
+		return new int[][] {
 				{8,0,0, 0,0,0, 0,0,0},
 				{0,0,3, 6,0,0, 0,0,0},
 				{0,7,0, 0,9,0, 2,0,0},
@@ -87,6 +82,16 @@ public class HardSudoku {
 				{0,0,8, 5,0,0, 0,1,0},
 				{0,9,0, 0,0,0, 4,0,0},
 		};
+	}
+
+	public void buildModel() {
+		model = new Model();
+
+		rows = new IntVar[n][n];
+		cols = new IntVar[n][n];
+		shapes = new IntVar[n][n];
+
+		int[][] instance = getInstance();
 
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {

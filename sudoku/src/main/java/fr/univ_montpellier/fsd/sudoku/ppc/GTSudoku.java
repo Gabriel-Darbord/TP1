@@ -100,8 +100,13 @@ public class GTSudoku {
 		}
 
 		// --------------------------------------
+		buildGTConstraints();
+		// --------------------------------------
+	}
 
-		// contraintes générées pour l'instance suivante :
+	@Deprecated
+	private void buildGTConstraints() {
+		// contraintes générées à partir de l'instance suivante :
 		// <><<><<<<<<<><>>><>><><<<>>>>><<<><>><>><<>>>>>>><><>><>><<><><><><><<<>><<><>><><>><<><<<><<>><>><<><>>><><
 		model.arithm(rows[0][0], "<", rows[0][1]).post();
 		model.arithm(rows[0][1], ">", rows[0][2]).post();
@@ -212,9 +217,6 @@ public class GTSudoku {
 		model.arithm(cols[8][4], "<", cols[8][5]).post();
 		model.arithm(cols[8][6], ">", cols[8][7]).post();
 		model.arithm(cols[8][7], "<", cols[8][8]).post();
-
-		// --------------------------------------
-
 	}
 
 	// Check all parameters values

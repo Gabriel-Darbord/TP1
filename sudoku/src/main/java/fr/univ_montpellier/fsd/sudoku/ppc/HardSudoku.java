@@ -14,12 +14,19 @@ import org.chocosolver.solver.variables.IntVar;
 import static org.chocosolver.solver.search.strategy.Search.minDomLBSearch;
 import static org.chocosolver.util.tools.ArrayUtils.append;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
 public class HardSudoku {
 
 	static int n;
 	static int s;
-	private static int instance;
 	private static long timeout = 3600000; // one hour
+	private static String filepath;
+	private static boolean solveAll;
 
 	IntVar[][] rows, cols, shapes;
 
@@ -37,16 +44,43 @@ public class HardSudoku {
 			formatter.printHelp("sudoku", options, true);
 			System.exit(0);
 		}
-		instance = 9;
+		n = 9;
 		// Check arguments and options
 		for (Option opt : line.getOptions()) {
 			checkOption(line, opt.getLongOpt());
 		}
 
-		n = instance;
 		s = (int) Math.sqrt(n);
 		
 		new HardSudoku().solve();
+	}
+
+	// récupération d'une instance depuis un fichier
+	public int[][] readFromFile() {
+		int[][] res = null;
+		File data = new File(filepath);
+		BufferedReader reader;
+
+		try {
+			reader = new BufferedReader(new FileReader(data));
+			String line = reader.readLine();
+	
+			n = Integer.parseInt(line);
+			res = new int[n][n];
+	
+			for (int i = 0; i < n; i++) {
+				line = reader.readLine();
+				String[] nums = line.split(" ");
+	
+				for (int j = 0; j < n; j++) {
+					res[i][j] = Integer.parseInt(nums[j]);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return res;
 	}
 
 	public void solve() {
@@ -54,21 +88,25 @@ public class HardSudoku {
 		buildModel();
 		model.getSolver().showStatistics();
 
-		while(model.getSolver().solve()) {
-			StringBuilder st = new StringBuilder(String.format("Sudoku -- %s\n", instance, " X ", instance));
+		do {
+			if (!model.getSolver().solve())
+				break;
+
+			StringBuilder st = new StringBuilder(String.format("Sudoku -- %s\n", n, " X ", n));
 			st.append("\t");
 			for (int i = 0; i < n; i++) {
 				for (int j = 0; j < n; j++) {
 					st.append(rows[i][j]).append("\t\t\t");
 				}
 				st.append("\n\t");
+
 			}
-	
 			System.out.println(st.toString());
-		}
+		} while(solveAll);
 	}
 	
 	// instance de la question 7
+	@Deprecated
 	protected int[][] getInstance() {
 		return new int[][] {
 				{8,0,0, 0,0,0, 0,0,0},
@@ -88,11 +126,14 @@ public class HardSudoku {
 	public void buildModel() {
 		model = new Model();
 
+		int[][] instance = null;
+		if (filepath != null) {
+			instance = readFromFile();
+		}
+
 		rows = new IntVar[n][n];
 		cols = new IntVar[n][n];
 		shapes = new IntVar[n][n];
-
-		int[][] instance = getInstance(); // null pour grille vide
 
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
@@ -133,17 +174,21 @@ public class HardSudoku {
 	public static void checkOption(CommandLine line, String option) {
 
 		switch (option) {
-		case "inst":
-			instance = Integer.parseInt(line.getOptionValue(option));
+		case "instance":
+			n = Integer.parseInt(line.getOptionValue(option));
 			break;
 		case "timeout":
 			timeout = Long.parseLong(line.getOptionValue(option));
 			break;
-		default: {
+		case "file":
+			filepath = line.getOptionValue(option);
+			break;
+		case "all":
+			solveAll = Boolean.parseBoolean(line.getOptionValue(option));
+			break;
+		default:
 			System.err.println("Bad parameter: " + option);
 			System.exit(2);
-		}
-
 		}
 
 	}
@@ -158,12 +203,20 @@ public class HardSudoku {
 
 		final Option limitOption = Option.builder("t").longOpt("timeout").hasArg(true).argName("timeout in ms")
 				.desc("Set the timeout limit to the specified time").required(false).build();
+		
+		final Option fileOption = Option.builder("f").longOpt("file").hasArg(true).argName("instance file")
+				.desc("File containing an instance of sudoku").required(false).build();
+		
+		final Option allOption = Option.builder("a").longOpt("all").hasArg(true).argName("all solutions")
+				.desc("Search all solutions of this sudoku instance").required(false).build();
 
 		// Create the options list
 		final Options options = new Options();
 		options.addOption(instOption);
 		options.addOption(limitOption);
 		options.addOption(helpFileOption);
+		options.addOption(fileOption);
+		options.addOption(allOption);
 
 		return options;
 	}

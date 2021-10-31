@@ -1,7 +1,7 @@
 package fr.univ_montpellier.fsd.sudoku.ppc;
 
 public class VeryHardSudoku extends HardSudoku {
-	private static int instance = 16;
+	private static final int instance = 16;
 
 	public VeryHardSudoku() {
 		n = instance;
@@ -9,6 +9,7 @@ public class VeryHardSudoku extends HardSudoku {
 	}
 
 	// instance de la question 8
+	@Deprecated
 	@Override
 	protected int[][] getInstance() {
 		return new int [][] {

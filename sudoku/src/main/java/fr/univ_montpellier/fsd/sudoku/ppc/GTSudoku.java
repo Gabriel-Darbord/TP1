@@ -14,12 +14,18 @@ import org.chocosolver.solver.variables.IntVar;
 import static org.chocosolver.solver.search.strategy.Search.minDomLBSearch;
 import static org.chocosolver.util.tools.ArrayUtils.append;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
 public class GTSudoku {
 
 	static int n;
 	static int s;
 	public static int instance;
 	private static long timeout = 3600000; // one hour
+	private static String filepath;
 
 	IntVar[][] rows, cols, shapes;
 
@@ -38,6 +44,7 @@ public class GTSudoku {
 			System.exit(0);
 		}
 		instance = 9;
+		filepath = "data/GTSudoku.txt";
 		// Check arguments and options
 		for (Option opt : line.getOptions()) {
 			checkOption(line, opt.getLongOpt());
@@ -100,8 +107,37 @@ public class GTSudoku {
 		}
 
 		// --------------------------------------
-		buildGTConstraints();
+		readGTConstraintsFromFile();
 		// --------------------------------------
+	}
+	
+	private void readGTConstraintsFromFile() {
+		File data = new File(filepath);
+		BufferedReader reader;
+		
+		try {
+			reader = new BufferedReader(new FileReader(data));
+			String ops = reader.readLine(); // n
+			ops = reader.readLine();
+			
+			int ind = 0;
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < n; j++) {
+					if (j % s != s - 1) {
+						model.arithm(rows[i][j], "" + ops.charAt(ind++), rows[i][j + 1]).post();
+					}
+				}
+			}
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < n; j++) {
+					if (j % s != s - 1) {
+						model.arithm(cols[i][j], "" + ops.charAt(ind++), cols[i][j + 1]).post();
+					}
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Deprecated
